@@ -1,2 +1,2 @@
-# PythonProjects
-Small python projects
+# Automated Organizer
+
