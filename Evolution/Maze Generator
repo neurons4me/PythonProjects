@@ -96,7 +96,7 @@ while attemptActive == True:
 
 ## there is something not right at all going on here... these sometimes end up in endless loops (more abort break sections needed I think) and the actual numbers can jump around crazy. I think I found the problem with the jumping...
 ## I need to cache the state of the curent coords before seeing the new ones so I can reset them when invalid placements fail out. It is still keeping the invalid stabs when it loops back around.
-
+## loop situation mostly handled... sometimes still gets caught when throwing a disallowed type 1 error
 
             if newColCoords > mazeWidth -1 :
                 abortMove = True
