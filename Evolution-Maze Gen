@@ -1,0 +1,170 @@
+#Maze Generator
+import random, math
+
+#Makes the grid itself
+mazeWidth = 5
+mazeHeight = 5
+mazeGrid = [[0]*mazeWidth for i in range(mazeHeight)]
+
+#Picks the starting position
+leftCol = 0
+rightCol = mazeWidth - 1
+topRow = 0
+bottomRow = mazeHeight - 1
+randomStartSideGen = random.randint(1,4)
+sides = {1: leftCol , 2: topRow , 3: rightCol , 4: bottomRow}
+print(randomStartSideGen)
+print("randomStartSideGen = " + str(randomStartSideGen))
+
+if randomStartSideGen == 1:
+    randomStartSpotGen = random.randint(0, mazeHeight - 1)
+    mazeGrid[randomStartSpotGen][leftCol] = 2
+    startSpotCoords = [randomStartSpotGen , leftCol]
+elif randomStartSideGen == 3:
+    randomStartSpotGen = random.randint(0, mazeHeight - 1)
+    mazeGrid[randomStartSpotGen][rightCol] = 2
+    startSpotCoords = [randomStartSpotGen , rightCol]
+elif randomStartSideGen == 2:
+    randomStartSpotGen = random.randint(0, mazeWidth - 1)
+    mazeGrid[topRow][randomStartSpotGen] = 2
+    startSpotCoords = [topRow , randomStartSpotGen]
+elif randomStartSideGen == 4:
+    randomStartSpotGen = random.randint(0, mazeWidth - 1)
+    mazeGrid[bottomRow][randomStartSpotGen] = 2
+    startSpotCoords = [bottomRow , randomStartSpotGen]
+for row in range(mazeHeight):
+    print(mazeGrid[row])
+#    print(row)
+
+
+#Colision detection and movement for the critical path
+pathLenCount = 0
+totalPathLen = round(math.sqrt(mazeWidth * mazeHeight * .9))
+lastPlacementValue = 2
+curentCoords = startSpotCoords
+abortMove = False
+attemptActive = True
+abortCount = 0
+
+while attemptActive == True:
+    while lastPlacementValue != 3:
+        abortMove = False #resets the abort move break point
+
+        if abortCount > 100:          # Learn how to wrap up the maze generation in a function so I can call it down here as well as part of a reset/retry section
+            break                            #add abort tickers to all abortMove options, variableize the abort tollerence number so it can be modified easily
+
+        #Pick a random move and calculate its coordinates
+        pathDir = random.randint(1,4)
+        if pathDir == 1:
+            newColCoords = curentCoords[0]
+            newRowCoords = curentCoords[1] - 1
+         #   print("new coords have been calculated 0")
+        elif pathDir == 2:
+            newColCoords = curentCoords[0] - 1
+            newRowCoords = curentCoords[1]
+         #   print("new coords have been calculated 1")
+        elif pathDir == 3:
+            newColCoords = curentCoords[0]
+            newRowCoords = curentCoords[1] + 1
+         #   print("new coords have been calculated 2")
+        elif pathDir == 4:
+            newColCoords = curentCoords[0] + 1
+            newRowCoords = curentCoords[1]
+         #   print("new coords have been calculated 3")
+  #      print(pathDir)
+            
+        try: #gracefully fail hopefully when out of bounds errors occur
+
+            # Test for out of bounds picks
+            
+            if newRowCoords > mazeHeight -1 :
+                abortMove = True
+                print("OOB type 0")
+
+
+            if newRowCoords < 0:
+                print("OOB type 1")
+                print(newRowCoords)
+                print(newColCoords)
+                abortMove = True
+                
+            if newColCoords < 0:
+                print("OOB type 2")
+                print(newRowCoords)
+                print(newColCoords)
+                abortMove = True
+
+## there is something not right at all going on here... these sometimes end up in endless loops (more abort break sections needed I think) and the actual numbers can jump around crazy. I think I found the problem with the jumping...
+## I need to cache the state of the curent coords before seeing the new ones so I can reset them when invalid placements fail out. It is still keeping the invalid stabs when it loops back around.
+
+
+            if newColCoords > mazeWidth -1 :
+                abortMove = True
+                print("OOB type 3")
+
+            # test for disallowed picks
+##            print(newRowCoords)
+##            print(newColCoords)
+            if mazeGrid[newRowCoords][newColCoords] == 2:
+                abortMove = True
+                print("Disallowed type 0")
+            if mazeGrid[newRowCoords][newColCoords] == 1:
+               abortMove = True
+               print("Disallowed type 1")
+            abortCount = abortCount + 1       
+        except:
+            abortMove = True
+            print("error")
+            abortCount = abortCount + 1
+            if abortCount > 100:
+                break
+    
+        
+
+        if abortMove == False:
+            print("something happens! We have movement.")
+            if pathLenCount == totalPathLen and mazeGrid[newRowCoords][newColCoords] == 0:
+                mazeGrid[newRowCoords][newColCoords] = 3
+                lastPlacementValue = 3
+                curentCoords = [newRowCoords , newColCoords]
+                pathLenCount = pathLenCount + 1
+                attemptActive = False
+                print("a final placement made")
+            if mazeGrid[newRowCoords][newColCoords] == 0:
+                mazeGrid[newRowCoords][newColCoords] = 1
+                lastPlacementValue = 1
+                curentCoords = [newRowCoords , newColCoords]
+                pathLenCount = pathLenCount + 1
+                print("a new spot has been moved to")
+
+                print(curentCoords)
+
+                for row in range(mazeHeight):
+                    print(mazeGrid[row])
+
+           # abortCount = 0    # Resets the abort counter when a success is made
+
+        
+
+    if abortCount > 100:
+        break
+    print(pathLenCount)
+
+
+for row in range(mazeHeight): # a perfect simple canidate to turn into a function and learn how to work with those
+    print(mazeGrid[row])
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
