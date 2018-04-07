@@ -1,0 +1,61 @@
+from bs4 import BeautifulSoup
+from urllib.request import urlopen
+log_results = []
+
+#Sanitizes a list of None values
+def remove_nones(list_nones):
+    return [e for e in list_nones if e != None]
+
+
+#Takes a URL as input and fetches a list where index[0] is the page title and the remaining items are all the links to other pages
+def page_title_links_fetch(url):        
+    item_list = []
+
+    try:
+        url_check = urlopen(url)
+    except:
+        return ["Error", '']
+    else:
+
+
+        page = BeautifulSoup(urlopen(url), "html.parser")
+
+        title = page.title.contents
+        item_list.append(title)
+        link_list = page.find_all('a')
+        remove_nones(link_list)
+        for link in link_list:
+            link_add = link.get('href')
+            if link_add == None:
+                link_add = ""
+            if 'http://' in link_add or 'https://' in link_add:
+                item_list.append(link_add)
+        log_results.append(item_list)    
+        return item_list
+
+
+
+url_first = "http://www.columbia.edu/~fdc/sample.html"
+
+#store the 1st results
+fetch_results_parent = page_title_links_fetch(url_first)
+
+print("The parent page title is %s" % fetch_results_parent[0])
+
+#getting an error from a list being within a list... need to filter out self referential links on page?
+for link in fetch_results_parent[1:]:
+    fetch_results_n = page_title_links_fetch(link)
+    print("The next page title is %s" % fetch_results_n[0])
+
+page_count = 1
+for item in log_results:
+    if 'http://' not in item or 'https://' not in item:
+        print(item)
+        print('THE %i PAGE CHECKED IS TITLED %s ' % page_count, item)
+        page_count += 1
+    elif 'http://' in item or 'https://' in item:
+        print(item)
+    
+
+
+
