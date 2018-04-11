@@ -1,0 +1,53 @@
+def encrypt(text, n):
+
+    encrypt_input = text
+    count = 0
+    while count < n:
+        count += 1
+        count_index = 0
+        letters_even = ''
+        letters_odd= ''
+        for letter in encrypt_input:
+
+            if (count_index + 1) % 2 == 0:
+                letters_even += letter
+            elif (count_index + 1) % 2 != 0:
+                letters_odd += letter
+            count_index += 1
+
+        encrypt_input = letters_even + letters_odd
+    return encrypt_input
+
+print(encrypt("ABCDEFGHI", 1))
+
+
+def decrypt(encrypted_text, n):
+
+    decrypt_input = encrypted_text
+    count = 0
+    while count < n:
+        count += 1
+        count_index = 0
+        letters_even = ''
+        letters_odd= ''
+
+        letters_odd = decrypt_input[len(decrypt_input) // 2:]
+        letters_even = decrypt_input[:len(decrypt_input) // 2]
+
+
+    print(letters_even)
+    print(letters_odd)
+
+
+##        for letter in decrypt_input:
+##
+##            if (count_index + 1) % 2 == 0:
+##                letters_even += letter
+##            elif (count_index + 1) % 2 != 0:
+##                letters_odd += letter
+##            count_index += 1
+##
+##        decrypt_input = letters_odd + letters_even
+    return decrypt_input
+
+print(decrypt("BDFHACEGI", 1))
